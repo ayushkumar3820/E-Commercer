@@ -14,6 +14,7 @@ import {
   productUpdate,
 } from "../Controller/productController.js";
 import { cart, cartDeleted, cartGet, cartMerger, cartProduct } from "../Controller/CartController.js";
+import { checkoutPost, checkoutPostById, checkoutPut } from "../Controller/checkoutController.js";
 
 const router = express.Router();
 
@@ -178,4 +179,9 @@ router.put("/cartUpdate",authMiddleware, admin,cartProduct);
 router.delete("/cart/delete",authMiddleware,cartDeleted);
 router.get("/cart/get",cartGet);
 router.get("/cart/merger",cartMerger);
+
+
+router.post("/checkout",authMiddleware,checkoutPost);
+router.put("/checkout/:id",authMiddleware,checkoutPut);
+router.post("/checkout/:id/finalize",authMiddleware,checkoutPostById);
 export default router;
