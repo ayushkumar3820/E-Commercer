@@ -1,5 +1,6 @@
 // Router/user.js
 import express from "express";
+
 import { register, login, logout } from "../Controller/userController.js";
 import validate from "../validation/index.js";
 import { authMiddleware, admin } from "../middleware/auth.middlerware.js";
@@ -15,6 +16,8 @@ import {
 } from "../Controller/productController.js";
 import { cart, cartDeleted, cartGet, cartMerger, cartProduct } from "../Controller/CartController.js";
 import { checkoutPost, checkoutPostById, checkoutPut } from "../Controller/checkoutController.js";
+import { myOrder, orderGet } from "../Controller/OrderController.js";
+import { subscriptionController } from "../Controller/subscriptionController.js";
 
 const router = express.Router();
 
@@ -183,5 +186,15 @@ router.get("/cart/merger",cartMerger);
 
 router.post("/checkout",authMiddleware,checkoutPost);
 router.put("/checkout/:id",authMiddleware,checkoutPut);
-router.post("/checkout/:id/finalize",authMiddleware,checkoutPostById);
+router.post("/checkout/finalize/:id",authMiddleware,checkoutPostById);
+
+
+//order
+router.get("/order",authMiddleware,myOrder);
+router.get("/order/:id",authMiddleware,orderGet);
+
+
+router.post("/subscribed",subscriptionController);
+
+
 export default router;

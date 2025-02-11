@@ -12,7 +12,7 @@ const CheckoutSchema = new mongoose.Schema({
     required: true,
   },
   images: {
-    type: [String], // Supports multiple images
+    type: [String],
     required: true
   },
   price: {
@@ -28,7 +28,7 @@ const CheckoutItemsSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  checkoutItems: [CheckoutSchema], // Corrected array name
+  checkoutItems: [CheckoutSchema],
   shippingAddress: {
     address: { type: String, required: true },
     city: { type: String, required: true },
@@ -54,9 +54,11 @@ const CheckoutItemsSchema = new mongoose.Schema({
     type: String,
     default: "pending"
   },
-  paymentDetails: { // Fixed typo from `paymentDeatlis`
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Payment"
+  paymentDetails: {
+    transactionId: { type: String },
+    paymentGateway: { type: String },
+    amount: { type: Number },
+    currency: { type: String }
   },
   isFinalized: {
     type: Boolean,

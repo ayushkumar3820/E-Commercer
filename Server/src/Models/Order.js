@@ -19,11 +19,11 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    size:String,
-    color:String,
-    quantity:{
-        type:Number,
-        required:true,
+    size: String,
+    color: String,
+    quantity: {
+      type: Number,
+      required: true,
     }
   },
   { _id: false }
@@ -58,34 +58,31 @@ const OrderItems = new mongoose.Schema(
     paidAt: {
       type: Date,
     },
-
-    isDelivered:{
-        type:Boolean,
-        required:false,
+    isDelivered: {
+      type: Boolean,
+      required: false,
     },
-
-    deliveredAt:{
-        type:Date
+    deliveredAt: {
+      type: Date
     },
-
     paymentStatus: {
       type: String,
       default: "pending",
     },
-    paymentDeatlis: {
-      type: mongoose.Schema.Types.ObjectId,
+    paymentDetails: {
+      transactionId: { type: String },
+      paymentGateway: { type: String },
+      amount: { type: Number },
+      currency: { type: String }
     },
-   status:{
-    type:String,
-    enum:["Processing",
-        "shipped","Delivered","Cancelled"
-    ],
-    default:"Processing"
-   },
+    status: {
+      type: String,
+      enum: ["Processing", "shipped", "Delivered", "Cancelled"],
+      default: "Processing"
+    },
   },
   { timestamps: true }
 );
 
-const Order= mongoose.model("Order", OrderItems);
-
+const Order = mongoose.model("Order", OrderItems);
 export default Order;

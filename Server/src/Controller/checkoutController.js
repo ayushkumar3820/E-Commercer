@@ -1,6 +1,6 @@
 import Cart from "../Models/Cart.js";
 import Checkout from "../Models/Checkout.js";
-import Order from "../Models/Order.js"; // Import the Order model
+import Order from "../Models/Order.js";
 
 // 📌 Create a new Checkout Order
 const checkoutPost = async (req, res) => {
@@ -12,12 +12,12 @@ const checkoutPost = async (req, res) => {
 
     try {
         const newCheckout = await Checkout.create({
-            user: req.user.id, // Fixed `res.user._id` to `req.user._id`
+            user: req.user.id,
             checkoutItems,
             shippingAddress,
             paymentMethod,
             totalPrice,
-            paymentStatus: "pending", // Fixed incorrect field name
+            paymentStatus: "pending",
         });
 
         console.log(`Checkout created for user: ${req.user.id}`);
@@ -41,7 +41,12 @@ const checkoutPut = async (req, res) => {
         if (paymentStatus === "paid") {
             checkout.isPaid = true;
             checkout.paymentStatus = paymentStatus;
-            checkout.paymentDetails = paymentDetails;
+            checkout.paymentDetails = {
+                transactionId: paymentDetails.transactionId,
+                paymentGateway: paymentDetails.paymentGateway,
+                amount: paymentDetails.amount,
+                currency: paymentDetails.currency
+            };
             checkout.paidAt = Date.now();
 
             await checkout.save();
@@ -67,17 +72,29 @@ const checkoutPostById = async (req, res) => {
             return res.status(400).json({ message: "Checkout already finalized" });
         }
 
+        // Transform checkout items to match Order schema
+        const orderItems = checkout.checkoutItems.map(item => ({
+            productId: item.productId,
+            name: item.name,
+            images: item.images[0], // Take first image since Order schema expects single string
+            price: item.price,
+            quantity: 1, // Set default quantity or get from request
+            size: req.body.size || "", // Optional
+            color: req.body.color || "" // Optional
+        }));
+
         // Create Order
         const finalOrder = await Order.create({
             user: checkout.user,
-            orderItems: checkout.checkoutItems, // Fixed incorrect field name
+            OrderItems: orderItems,
             shippingAddress: checkout.shippingAddress,
             paymentMethod: checkout.paymentMethod,
+            totalPrice: checkout.totalPrice,
             isPaid: checkout.isPaid,
             paidAt: checkout.paidAt,
             isDelivered: false,
-            paymentStatus: "paid",
-            paymentDetails: checkout.paymentDetails, // Fixed typo `paymentDeatlis`
+            paymentStatus: checkout.paymentStatus,
+            paymentDetails: checkout.paymentDetails,
         });
 
         // Mark Checkout as Finalized
@@ -85,7 +102,7 @@ const checkoutPostById = async (req, res) => {
         checkout.finalizedAt = Date.now();
         await checkout.save();
 
-        // Remove User's Cart after successful checkout
+        // Remove User's Cart
         await Cart.findOneAndDelete({ user: checkout.user });
 
         res.status(201).json(finalOrder);
@@ -94,5 +111,4 @@ const checkoutPostById = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
-
 export { checkoutPost, checkoutPut, checkoutPostById };
