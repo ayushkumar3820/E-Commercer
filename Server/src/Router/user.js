@@ -18,6 +18,8 @@ import { cart, cartDeleted, cartGet, cartMerger, cartProduct } from "../Controll
 import { checkoutPost, checkoutPostById, checkoutPut } from "../Controller/checkoutController.js";
 import { myOrder, orderGet } from "../Controller/OrderController.js";
 import { subscriptionController } from "../Controller/subscriptionController.js";
+import { userDelete, userGet, userPost, userPut } from "../Controller/userfind.js";
+import { orderAdminDelete, orderAdminPut, OrderAdminRouter, productAdminRoute } from "../Controller/productadmin.js";
 
 const router = express.Router();
 
@@ -197,4 +199,16 @@ router.get("/order/:id",authMiddleware,orderGet);
 router.post("/subscribed",subscriptionController);
 
 
+router.get("/user",authMiddleware,admin,userGet);
+router.post("/user",authMiddleware,admin,userPost);
+router.put("/user/:id",authMiddleware,admin,userPut);
+router.delete("/user/:id",authMiddleware,admin,userDelete);
+
+
+router.get("/product",authMiddleware,admin,productAdminRoute);
+
+router.get("/orders",authMiddleware,admin,OrderAdminRouter);
+router.put("/orders/:id",authMiddleware,admin,orderAdminPut);
+
+router.delete("/orders/:id",authMiddleware,admin,orderAdminDelete);
 export default router;

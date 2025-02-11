@@ -22,4 +22,5 @@ const subscriptionController = async (req, res) => {
   }
 };
 
+
 export { subscriptionController };
